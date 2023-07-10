@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+
+# IntelliJ
+.idea/*
+
+# Visual Studio Code
+.vscode/*
+.history/
+*.app
+.snapshots/*
+
+# Local env files
+.env
