@@ -120,23 +120,23 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-            example:
-              email: hello@user.me
-              name: Maria
-              role: jedi
-              time_available: 1
-              bio: I am a jedi named Maria and I am awesome
-              job:
-                company: Mentoresque
-                position: Senior Frontend Developeress
-              skills:
-                - JavaScript
-                - OOP
-                - Scala
-              social:
-                twitter: '@maria_the_great'
-                telegram: '@mynameisgorgeous'
-              active: true
+#            example:
+#              email: hello@user.me
+#              name: Maria
+#              role: jedi
+#              time_available: 1
+#              bio: I am a jedi named Maria and I am awesome
+#              job:
+#                company: Mentoresque
+#                position: Senior Frontend Developeress
+#              skills:
+#                - JavaScript
+#                - OOP
+#                - Scala
+#              social:
+#                twitter: '@maria_the_great'
+#                telegram: '@mynameisgorgeous'
+#              active: true
         description: Json body with new user data
         required: true
       responses:
@@ -146,13 +146,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-              example:
-                _id: '5ea57cd412560f000fbe189d'
-                email: hello@user.me
-                registered: '2016-08-29T09:12:33.001Z'
-                updated: "2020-04-26T12:34:40.647Z"
-                skills: []
-                active: false
         404:
           description: Not Found
           content:
@@ -315,6 +308,9 @@ components:
         display_name:
           type: string
           example: WookieGirl77
+        bio:
+          type: string
+          example: "I am a C++ jedi and I am awesome, contact me!"
         role:
           type: string
           format: enum
