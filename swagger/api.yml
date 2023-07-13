@@ -2,16 +2,18 @@ openapi: 3.0.1
 info:
   title: Mentoresque API
   description: Yes it is an API
-  version: "0.1.3"
+  version: "0.1.4"
   contact:
     email: mentoresque@asyavee.pro
+security:
+  - api_key: []
 paths:
   /users:
     get:
-      summary: gets users info
+      summary: "get matched users' data"
       tags:
         - Users
-      description: Get a list of users
+      description: Get a list of matched users
       parameters:
         - $ref:  '#/components/parameters/match-query'
         - $ref:  '#/components/parameters/page-query'
@@ -30,14 +32,17 @@ paths:
                     type: array
                     items: 
                       $ref: '#/components/schemas/User'
+        401: 
+          $ref: '#/components/responses/UnauthorizedError'
   /user:
     get:
       tags:
         - Users
-      summary: get user by email
-      description: Get user by email
+      summary: get user data
+      description: Get user by Telegram ID
       parameters:
-        - $ref:  '#/components/parameters/email-query-required'
+        - $ref:  '#/components/parameters/tgid-query'
+        - $ref:  '#/components/parameters/id-query'
       responses:
         200:
           description: OK
@@ -52,8 +57,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                Parameters are requred:
-                  $ref: '#/components/examples/error-400--parameter-email-is-required'
+                Parameters are required:
+                  $ref: '#/components/examples/error-400--parameter-ids-are-required'
         404:
           description: Not Found
           content:
@@ -61,22 +66,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                Email not found:
-                  $ref: '#/components/examples/error-404--parameter-email-not-found'
-
+                User not found:
+                  $ref: '#/components/examples/error-404--parameter-id-not-found'
+        401: 
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
         - Users
-      summary: adds new user
-      description: Adds new user
+      summary: add user
+      description: Adds a new user
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
             example:
-              email: hello@user.me
-        description: Json body with necessary data for creating new user
+              tg_id: 155328566
+        description: Json body with necessary data for creating a new user
         required: true
       responses:
         201:
@@ -86,9 +92,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
               example:
-                _id:
+                _id: '5e836e431a2576000fdbcb4b'
                 registration_date: '2016-08-29T09:12:33.001Z'
-                email: hello@user.me
+                tg_id: 155328566
         400:
           description: Bad Request
           content:
@@ -96,8 +102,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                Parameters are requred:
-                  $ref: '#/components/examples/error-400--parameter-email-is-required'
+                Parameters are required:
+                  $ref: '#/components/examples/error-400--parameter-id-is-required'
         409:
           description: Conflict
           content:
@@ -106,7 +112,9 @@ paths:
                 $ref: '#/components/schemas/Error'
               examples:
                 User already exists:
-                  $ref: '#/components/examples/error-409--email-is-not-unique'
+                  $ref: '#/components/examples/error-409--id-is-not-unique'
+        401: 
+          $ref: '#/components/responses/UnauthorizedError'
   /user/{id}:
     put:
       tags:
@@ -120,23 +128,23 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-#            example:
-#              email: hello@user.me
-#              name: Maria
-#              role: jedi
-#              time_available: 1
-#              bio: I am a jedi named Maria and I am awesome
-#              job:
-#                company: Mentoresque
-#                position: Senior Frontend Developeress
-#              skills:
-#                - JavaScript
-#                - OOP
-#                - Scala
-#              social:
-#                twitter: '@maria_the_great'
-#                telegram: '@mynameisgorgeous'
-#              active: true
+            # example:
+            #   email: hello@user.me
+            #   name: Maria
+            #   role: jedi
+            #   time_available: 1
+            #   bio: I am a jedi named Maria and I am awesome
+            #   job:
+            #     company: Mentoresque
+            #     position: Senior Frontend Developeress
+            #   skills:
+            #     - JavaScript
+            #     - OOP
+            #     - Scala
+            #   social:
+            #     twitter: '@maria_the_great'
+            #     telegram: '@mynameisgorgeous'
+            #   active: true
         description: Json body with new user data
         required: true
       responses:
@@ -168,21 +176,19 @@ paths:
                   $ref: '#/components/examples/error-400--parameter-id-is-required'
                 Email is invalid:
                   $ref: '#/components/examples/error-400--parameter-email-invalid'
-                Timestamps are readonly:
-                  $ref: '#/components/examples/error-400--parameter-timestamp-is-readonly'
                 Role is incorrect:
                   $ref: '#/components/examples/error-400--parameter-role-invalid'
-                Time_available is incorrect:
-                  $ref: '#/components/examples/error-400--parameter-timeavailable-invalid'
                 Skills are incorrect format:
                   $ref: '#/components/examples/error-400--parameter-skills-invalid-format'
                 Active not boolean:
                   $ref: '#/components/examples/error-400--parameter-active-invalid'
+        401: 
+          $ref: '#/components/responses/UnauthorizedError'
     delete:
       tags:
         - Users
       summary: delete user
-      description: Delete user
+      description: Delete a user
       parameters:
         - $ref:  '#/components/parameters/id-path-required'
       responses:
@@ -193,7 +199,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
               example:
-                message: "User with email 'hello@user.me' successfully deleted"
+                message: "User with id '5e836e431a2576000fdbcb4b' successfully deleted"
         400:
           description: Bad Request
           content:
@@ -203,7 +209,7 @@ paths:
               examples:
                 ID is invalid:
                   $ref: '#/components/examples/error-400--parameter-id-invalid'
-                Parameters are requred:
+                Parameters are required:
                   $ref: '#/components/examples/error-400--parameter-id-is-required'
         404:
           description: Not Found
@@ -212,10 +218,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                Email not found:
+                User not found:
                   $ref: '#/components/examples/error-404--parameter-id-not-found'
+        401: 
+          $ref: '#/components/responses/UnauthorizedError'          
 
 components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-API-KEY
+      in: header
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            statusCode: 401
+            error: Unauthorized
+            message: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+            
   parameters:
     id-path-required:
       in: path
@@ -224,6 +253,20 @@ components:
       required: true
       schema:
         type: string
+    id-query:
+      in: query
+      name: id
+      description: User ID
+      required: false
+      schema:
+        type: string
+    tgid-query:
+      in: query
+      name: tg_id
+      description: User Telegram ID
+      required: false
+      schema:
+        type: number
     email-query-required:
       in: query
       name: email
@@ -231,6 +274,13 @@ components:
       required: true
       schema:
         type: string
+    tg-query-required:
+      in: path
+      name: tg_id
+      description: User Telegram ID
+      required: true
+      schema:
+        type: number
     match-query: 
       in: query
       name: match_with
@@ -288,8 +338,6 @@ components:
       title: User
       description: User object description
       type: object
-      required:
-        - email
       properties:
         _id:
           type: string
@@ -301,10 +349,18 @@ components:
           format: ISO
           readOnly: true
           example: '2016-08-29T09:12:33.001Z'
-        email:
+        # email:
+        #   type: string
+        #   format: email
+        #   example: aliwookie@mail.com
+        tg_id:
+          type: number
+          readOnly: true
+          example: 155328566
+        tg_username: 
           type: string
-          format: email
-          example: aliwookie@mail.com
+          readOnly: true
+          example: 'developeress'
         display_name:
           type: string
           example: WookieGirl77
@@ -339,16 +395,31 @@ components:
         statusCode: 404
         error: "Not Found"
         message: "User with email: '${email}' does not exist."
+    error-404--parameter-tgid-not-found:
+      value:
+        statusCode: 404
+        error: "Not Found"
+        message: "User with telegram ID: '${tg_id}' does not exist."
     error-400--parameter-id-is-required:
       value:
         statusCode: 400
         error: "Bad Request"
         message: "Parameters 'id' is required"
+    error-400--parameter-ids-are-required:
+      value:
+        statusCode: 400
+        error: "Bad Request"
+        message: "Parameters 'id' or 'tg_id' is required"
     error-400--parameter-email-is-required:
       value:
         statusCode: 400
         error: "Bad Request"
         message: "Parameters 'email' is required"
+    error-400--parameter-tgid-is-required:
+      value:
+        statusCode: 400
+        error: "Bad Request"
+        message: "Parameters 'tg_id' is required"
     error-400--parameter-id-invalid:
       value:
         statusCode: 400
@@ -389,8 +460,8 @@ components:
         statusCode: 400
         error: "Bad Request"
         message: "ID invalid format"
-    error-409--email-is-not-unique:
+    error-409--id-is-not-unique:
       value:
         statusCode: 409
         error: "Conflict"
-        message: "User with '${id}' already exists. Email should be unique."
+        message: "User with ID: '${id}' already exists. ID should be unique."
