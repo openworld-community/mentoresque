@@ -231,7 +231,7 @@ components:
       in: header
   responses:
     UnauthorizedError:
-      description: API key is missing or invalid
+      description: Unauthorized
       content:
         application/json:
           schema:
@@ -363,7 +363,7 @@ components:
           example: 'developeress'
         display_name:
           type: string
-          example: WookieGirl77
+          example: 'Mari Wolowitz'
         bio:
           type: string
           example: "I am a C++ jedi and I am awesome, contact me!"
@@ -384,6 +384,12 @@ components:
             - JavaScript
             - PHP
             - C++
+        discoverable: 
+          type: boolean
+          example: true
+        active:
+          type: boolean
+          example: true
   examples:
     error-404--parameter-id-not-found:
       value:
@@ -440,11 +446,6 @@ components:
         statusCode: 400
         error: "Bad Request"
         message: "Parameter 'role' should be either `jedi` or `padawan`"
-    error-400--parameter-timeavailable-invalid:
-      value:
-        statusCode: 400
-        error: "Bad Request"
-        message: "Parameter 'time_available' is incorrect: should be either 0, 1 or 5."
     error-400--parameter-skills-invalid-format:
       value:
         statusCode: 400
