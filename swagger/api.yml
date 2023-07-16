@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Mentoresque API
   description: Yes it is an API
-  version: "0.1.4"
+  version: "0.1.5"
   contact:
     email: mentoresque@asyavee.pro
 security:
@@ -115,7 +115,6 @@ paths:
                   $ref: '#/components/examples/error-409--id-is-not-unique'
         401: 
           $ref: '#/components/responses/UnauthorizedError'
-  /user/{id}:
     put:
       tags:
         - Users
@@ -221,7 +220,60 @@ paths:
                 User not found:
                   $ref: '#/components/examples/error-404--parameter-id-not-found'
         401: 
-          $ref: '#/components/responses/UnauthorizedError'          
+          $ref: '#/components/responses/UnauthorizedError'        
+          
+  /skills:
+    get:
+      summary: get available skills list
+      tags:
+        - Utility
+      description: Get a list of available skills
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination: 
+                    $ref: '#/components/schemas/Meta'
+                  items:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/Skill'
+    post:
+      summary: add new skill
+      tags:
+        - Utility
+      description: Add new skill to dictionary
+      requestBody:
+        content:
+          application/json:
+            example:
+              skill: JavaScript
+      responses:
+        200: 
+          description: OK
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Skill'
+    delete: 
+      summary: delete skill
+      tags:
+        - Utility
+      description: Delete skill from dictionary
+      parameters:
+        - in: query
+          name: id
+          description: Skill ID
+          required: true
+          schema:
+            type: string
+      responses:
+        200: 
+          description: OK
 
 components:
   securitySchemes:
@@ -247,7 +299,7 @@ components:
             
   parameters:
     id-path-required:
-      in: path
+      in: query
       name: id
       description: User ID
       required: true
@@ -377,19 +429,32 @@ components:
         skills:
           type: array
           items:
-            type: string
-            format: string
+            $ref: '#/components/schemas/Skill'
           uniqueItems: true
           example:
-            - JavaScript
-            - PHP
-            - C++
+            - id: 42
+              name: JavaScript
+            - id: 13
+              name: PHP
         discoverable: 
           type: boolean
           example: true
         active:
           type: boolean
           example: true
+    Skill:
+      title: Skill
+      description: Skill object description
+      type: object
+      properties:
+        id:
+          type: string
+        name: 
+          type: string
+        synonims: 
+          type: array
+          items: 
+            type: string
   examples:
     error-404--parameter-id-not-found:
       value:
